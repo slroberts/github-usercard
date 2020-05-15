@@ -49,6 +49,80 @@ const followersArray = [];
       </div>
     </div>
 */
+const githubCard = (githubData) => {
+  const card = document.createElement("div");
+  const cardImg = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const name = document.createElement("h3");
+  const userName = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const profileLink = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  name.classList.add("name");
+  userName.classList.add("username");
+
+  card.appendChild(cardImg);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(userName);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+
+  cardImg.src = githubData.avatar_url;
+  name.textContent = githubData.name;
+  userName.textContent = githubData.login;
+  location.textContent = `Location: ${githubData.location}`;
+  profile.textContent = `Profile: `;
+  profileLink.href = githubData.html_url;
+  profileLink.textContent = githubData.html_url;
+  followers.textContent = `Followers: ${githubData.followers}`;
+  following.textContent = `Following: ${githubData.following}`;
+  bio.textContent = `Bio: ${githubData.bio}`;
+
+  profile.appendChild(profileLink);
+
+  return card;
+};
+
+const cardParent = document.querySelector(".cards");
+
+axios
+  .get("https://api.github.com/users/slroberts")
+  .then((response) => {
+    console.log("response", response.data);
+
+    const newGHCard = githubCard(response.data);
+    cardParent.appendChild(newGHCard);
+  })
+  .catch((err) => {
+    console.log("Did not connect.", err);
+  });
+
+let user;
+axios
+  .get(`https://api.github.com/users/slroberts/${user}`)
+  .then((followers) => {
+    console.log("response", followers.data);
+
+    const fData = followers.data;
+
+    for (let i = 0; i < fData.length; i++) {
+      const fCard = githubCard(fData[i]);
+      cardParent.appendChild(fCard);
+    }
+  })
+  .catch((err) => {
+    console.log("Bruh!", err);
+  });
 
 /*
   List of LS Instructors Github username's:
