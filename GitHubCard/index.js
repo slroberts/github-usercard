@@ -28,8 +28,6 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
-
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
     Using DOM methods and properties, create and return the following markup:
@@ -98,7 +96,7 @@ const cardParent = document.querySelector(".cards");
 axios
   .get("https://api.github.com/users/slroberts")
   .then((response) => {
-    console.log("response", response.data);
+    // console.log("response", response.data);
 
     const newGHCard = githubCard(response.data);
     cardParent.appendChild(newGHCard);
@@ -107,21 +105,48 @@ axios
     console.log("Did not connect.", err);
   });
 
-let user;
+// const followersArray = [
+//   "codyt11",
+//   "yoditnegash",
+//   "karenwinnielei",
+//   "Jfadelli",
+//   "PauloFurtunatoAlexandre",
+// ];
+
+// followersArray.forEach((follower) => {
+//   axios
+//     .get(`https://api.github.com/users/${follower}`)
+//     .then((response) => {
+//       console.log(response.data);
+//       // response.data.forEach((user) => {
+//       const fCard = githubCard(response.data);
+//       cardParent.appendChild(fCard);
+//       // });
+//     })
+//     .catch((err) => {
+//       console.log("Bruh!", err);
+//     });
+// });
+
 axios
-  .get(`https://api.github.com/users/slroberts/${user}`)
-  .then((followers) => {
-    console.log("response", followers.data);
+  .get("https://api.github.com/users/slroberts/followers")
+  .then((response) => {
+    followersArray = response.data;
+    // console.log(followersArray);
 
-    const fData = followers.data;
+    followersArray.forEach((follower) => {
+      axios
+        .get(`https://api.github.com/users/${follower.login}`)
+        .then((response) => {
+          // console.log(response);
 
-    for (let i = 0; i < fData.length; i++) {
-      const fCard = githubCard(fData[i]);
-      cardParent.appendChild(fCard);
-    }
-  })
-  .catch((err) => {
-    console.log("Bruh!", err);
+          const fCard = githubCard(response.data);
+          cardParent.appendChild(fCard);
+        })
+        .catch((err) => {
+          console.log("Bruh!", err);
+        });
+    });
   });
 
 /*
