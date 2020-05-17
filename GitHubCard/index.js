@@ -59,21 +59,28 @@ const githubCard = (githubData) => {
   const followers = document.createElement("p");
   const following = document.createElement("p");
   const bio = document.createElement("p");
+  const contributions = document.createElement("img");
+  const moreInfo = document.createElement("div");
+  const close = document.createElement("div");
 
   card.classList.add("card");
   cardInfo.classList.add("card-info");
   name.classList.add("name");
   userName.classList.add("username");
+  contributions.classList.add("contributions");
 
-  card.appendChild(cardImg);
-  card.appendChild(cardInfo);
-  cardInfo.appendChild(name);
-  cardInfo.appendChild(userName);
-  cardInfo.appendChild(location);
-  cardInfo.appendChild(profile);
-  cardInfo.appendChild(followers);
-  cardInfo.appendChild(following);
-  cardInfo.appendChild(bio);
+  card.append(cardImg, cardInfo, close);
+  cardInfo.append(
+    name,
+    userName,
+    location,
+    profile,
+    followers,
+    following,
+    bio,
+    contributions,
+    moreInfo
+  );
 
   cardImg.src = githubData.avatar_url;
   name.textContent = githubData.name;
@@ -85,8 +92,32 @@ const githubCard = (githubData) => {
   followers.textContent = `Followers: ${githubData.followers}`;
   following.textContent = `Following: ${githubData.following}`;
   bio.textContent = `Bio: ${githubData.bio}`;
+  contributions.src = `http://ghchart.rshah.org/${githubData.login}`;
+  moreInfo.textContent = "More Info +";
+  close.textContent = "Close";
+
+  contributions.style.display = "none";
+  contributions.style.width = "139%";
+  contributions.style.position = "relative";
+  contributions.style.marginTop = "40px";
+  contributions.style.left = "-170px";
+
+  moreInfo.style.marginTop = "20px";
+  close.style.display = "none";
 
   profile.appendChild(profileLink);
+
+  moreInfo.addEventListener("click", () => {
+    contributions.style.display = "flex";
+    moreInfo.style.display = "none";
+    close.style.display = "block";
+  });
+
+  close.addEventListener("click", () => {
+    contributions.style.display = "none";
+    moreInfo.style.display = "block";
+    close.style.display = "none";
+  });
 
   return card;
 };
@@ -96,7 +127,7 @@ const cardParent = document.querySelector(".cards");
 axios
   .get("https://api.github.com/users/slroberts")
   .then((response) => {
-    // console.log("response", response.data);
+    console.log("response", response.data);
 
     const newGHCard = githubCard(response.data);
     cardParent.appendChild(newGHCard);
