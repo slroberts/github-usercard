@@ -28,8 +28,6 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
-
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
     Using DOM methods and properties, create and return the following markup:
@@ -49,6 +47,138 @@ const followersArray = [];
       </div>
     </div>
 */
+const githubCard = (githubData) => {
+  const card = document.createElement("div");
+  const cardImg = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const name = document.createElement("h3");
+  const userName = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const profileLink = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+  const contributions = document.createElement("img");
+  const moreInfo = document.createElement("div");
+  const close = document.createElement("div");
+
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  name.classList.add("name");
+  userName.classList.add("username");
+  contributions.classList.add("contributions");
+
+  card.append(cardImg, cardInfo, close);
+  cardInfo.append(
+    name,
+    userName,
+    location,
+    profile,
+    followers,
+    following,
+    bio,
+    contributions,
+    moreInfo
+  );
+
+  cardImg.src = githubData.avatar_url;
+  name.textContent = githubData.name;
+  userName.textContent = githubData.login;
+  location.textContent = `Location: ${githubData.location}`;
+  profile.textContent = `Profile: `;
+  profileLink.href = githubData.html_url;
+  profileLink.textContent = githubData.html_url;
+  followers.textContent = `Followers: ${githubData.followers}`;
+  following.textContent = `Following: ${githubData.following}`;
+  bio.textContent = `Bio: ${githubData.bio}`;
+  contributions.src = `http://ghchart.rshah.org/${githubData.login}`;
+  moreInfo.textContent = "More Info +";
+  close.textContent = "Close";
+
+  contributions.style.display = "none";
+  contributions.style.width = "139%";
+  contributions.style.position = "relative";
+  contributions.style.marginTop = "40px";
+  contributions.style.left = "-170px";
+
+  moreInfo.style.marginTop = "20px";
+  close.style.display = "none";
+
+  profile.appendChild(profileLink);
+
+  moreInfo.addEventListener("click", () => {
+    contributions.style.display = "flex";
+    moreInfo.style.display = "none";
+    close.style.display = "block";
+  });
+
+  close.addEventListener("click", () => {
+    contributions.style.display = "none";
+    moreInfo.style.display = "block";
+    close.style.display = "none";
+  });
+
+  return card;
+};
+
+const cardParent = document.querySelector(".cards");
+
+axios
+  .get("https://api.github.com/users/slroberts")
+  .then((response) => {
+    console.log("response", response.data);
+
+    const newGHCard = githubCard(response.data);
+    cardParent.appendChild(newGHCard);
+  })
+  .catch((err) => {
+    console.log("Did not connect.", err);
+  });
+
+// const followersArray = [
+//   "codyt11",
+//   "yoditnegash",
+//   "karenwinnielei",
+//   "Jfadelli",
+//   "PauloFurtunatoAlexandre",
+// ];
+
+// followersArray.forEach((follower) => {
+//   axios
+//     .get(`https://api.github.com/users/${follower}`)
+//     .then((response) => {
+//       console.log(response.data);
+//       // response.data.forEach((user) => {
+//       const fCard = githubCard(response.data);
+//       cardParent.appendChild(fCard);
+//       // });
+//     })
+//     .catch((err) => {
+//       console.log("Bruh!", err);
+//     });
+// });
+
+axios
+  .get("https://api.github.com/users/slroberts/followers")
+  .then((response) => {
+    followersArray = response.data;
+    // console.log(followersArray);
+
+    followersArray.forEach((follower) => {
+      axios
+        .get(`https://api.github.com/users/${follower.login}`)
+        .then((response) => {
+          // console.log(response);
+
+          const fCard = githubCard(response.data);
+          cardParent.appendChild(fCard);
+        })
+        .catch((err) => {
+          console.log("Bruh!", err);
+        });
+    });
+  });
 
 /*
   List of LS Instructors Github username's:
